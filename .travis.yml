@@ -1,0 +1,27 @@
+if: tag IS blank
+
+language: java
+
+sudo: false
+
+jdk:
+  - openjdk11
+
+install:
+  - chmod a+x ./gradlew
+
+deploy:
+  provider: pages
+  skip-cleanup: true
+  github-token: $GITHUB_TOKEN
+  keep-history: false
+  target-branch: images
+  local-dir: build/image-zip
+  on:
+    branch: master
+
+cache:
+  directories:
+  - $HOME/.gradle
+
+script: ./gradlew --info --stacktrace runtimeZip
