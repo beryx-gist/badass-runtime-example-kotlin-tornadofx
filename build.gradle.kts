@@ -2,11 +2,11 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 
 plugins {
-    kotlin("jvm") version "1.3.10"
+    kotlin("jvm") version "1.3.50"
     application
-    id("org.openjfx.javafxplugin") version "0.0.5"
-    id("com.github.johnrengelman.shadow") version "4.0.3"
-    id("org.beryx.runtime") version "1.1.1"
+    id("org.openjfx.javafxplugin") version "0.0.8"
+    id("com.github.johnrengelman.shadow") version "5.1.0"
+    id("org.beryx.runtime") version "1.6.0"
 }
 
 val compileKotlin: KotlinCompile by tasks
@@ -41,4 +41,9 @@ runtime {
     imageZip.set(project.file("${project.buildDir}/image-zip/hello-image.zip"))
     options.set(listOf("--strip-debug", "--compress", "2", "--no-header-files", "--no-man-pages"))
     modules.set(listOf("java.desktop", "jdk.unsupported", "java.scripting", "java.logging", "java.xml"))
+    if(System.getenv("PLATFORM_SPECIFIC_IMAGES") == "true") {
+        targetPlatform("linux", System.getenv("JDK_LINUX_HOME"))
+        targetPlatform("mac", System.getenv("JDK_MAC_HOME"))
+        targetPlatform("win", System.getenv("JDK_WIN_HOME"))
+    }
 }

@@ -7,6 +7,19 @@ sudo: false
 jdk:
   - openjdk11
 
+before_install:
+  - wget -O jdk-linux.tar.gz $JDK_LINUX_URL
+  - tar -xvzf jdk-linux.tar.gz
+  - wget -O jdk-mac.tar.gz $JDK_MAC_URL
+  - tar -xvzf jdk-mac.tar.gz
+  - wget -O jdk-win.zip $JDK_WIN_URL
+  - unzip jdk-win.zip
+  - pwd
+  - ls -al
+  - ls -al $JDK_LINUX_HOME
+  - ls -al $JDK_MAC_HOME
+  - ls -al $JDK_WIN_HOME
+
 install:
   - chmod a+x ./gradlew
 
