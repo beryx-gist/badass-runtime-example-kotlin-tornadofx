@@ -9,10 +9,13 @@ jdk:
 
 before_install:
   - wget -O jdk-linux.tar.gz $JDK_LINUX_URL
+  - mkdir -p linux
   - tar -xvzf jdk-linux.tar.gz -C linux
   - wget -O jdk-mac.tar.gz $JDK_MAC_URL
+  - mkdir -p mac
   - tar -xvzf jdk-mac.tar.gz -C mac
   - wget -O jdk-win.zip $JDK_WIN_URL
+  - mkdir -p win
   - unzip jdk-win.zip -d win
   - pwd
   - ls -al
