@@ -1,4 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.openjfx.gradle.JavaFXModule
+import org.openjfx.gradle.JavaFXOptions
+import org.openjfx.gradle.JavaFXPlatform
 
 
 plugins {
@@ -27,7 +30,10 @@ repositories {
 
 javafx {
     modules = listOf("javafx.controls", "javafx.fxml")
+    configuration = "compileOnly"
 }
+
+val javaFXOptions = the<JavaFXOptions>()
 
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib:1.3.10")
@@ -35,15 +41,39 @@ dependencies {
     implementation("no.tornado:tornadofx:1.7.17") {
         exclude("org.jetbrains.kotlin")
     }
+    JavaFXPlatform.values().forEach {platform ->
+        val cfg = configurations.create("javafx_" + platform.classifier)
+        JavaFXModule.getJavaFXModules(javaFXOptions.modules).forEach { m ->
+            project.getDependencies().add(cfg.name,
+                    String.format("org.openjfx:%s:%s:%s", m.getArtifactName(), javaFXOptions.version, platform.classifier));
+        }
+    }
 }
 
 runtime {
     imageZip.set(project.file("${project.buildDir}/image-zip/hello-image.zip"))
     options.set(listOf("--strip-debug", "--compress", "2", "--no-header-files", "--no-man-pages"))
     modules.set(listOf("java.desktop", "jdk.unsupported", "java.scripting", "java.logging", "java.xml"))
-    if(System.getenv("PLATFORM_SPECIFIC_IMAGES") == "true") {
-        targetPlatform("linux", System.getenv("JDK_LINUX_HOME"))
-        targetPlatform("mac", System.getenv("JDK_MAC_HOME"))
-        targetPlatform("win", System.getenv("JDK_WIN_HOME"))
+
+    targetPlatform("linux", System.getenv("JDK_LINUX_HOME"))
+    targetPlatform("mac", System.getenv("JDK_MAC_HOME"))
+    targetPlatform("win", System.getenv("JDK_WIN_HOME"))
+}
+
+tasks.withType(CreateStartScripts::class).forEach {script ->
+    script.doFirst {
+        script.classpath =  files("lib/*")
+    }
+}
+
+tasks["runtime"].doLast {
+    JavaFXPlatform.values().forEach { platform ->
+        val cfg = configurations["javafx_" + platform.classifier]
+        cfg.resolvedConfiguration.files.forEach { f ->
+            copy {
+                from(f)
+                into("build/image/hello-${platform.classifier}/lib")
+            }
+        }
     }
 }
