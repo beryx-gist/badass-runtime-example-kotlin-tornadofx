@@ -5,11 +5,14 @@ import org.openjfx.gradle.JavaFXPlatform
 
 
 plugins {
-    kotlin("jvm") version "1.3.50"
+    kotlin("jvm") version "1.3.72"
     application
     id("org.openjfx.javafxplugin") version "0.0.8"
-    id("com.github.johnrengelman.shadow") version "5.1.0"
-    id("org.beryx.runtime") version "1.6.0"
+
+    // The Shadow Plugin is currently not compatible with Gradle 6.4
+    // see: https://github.com/johnrengelman/shadow/issues/572
+    // id("com.github.johnrengelman.shadow") version "5.2.0"
+    id("org.beryx.runtime") version "1.8.4"
 }
 
 val compileKotlin: KotlinCompile by tasks
@@ -36,9 +39,9 @@ javafx {
 val javaFXOptions = the<JavaFXOptions>()
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.3.10")
-    implementation("org.jetbrains.kotlin:kotlin-reflect:1.3.10")
-    implementation("no.tornado:tornadofx:1.7.17") {
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.3.72")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:1.3.72")
+    implementation("no.tornado:tornadofx:1.7.20") {
         exclude("org.jetbrains.kotlin")
     }
     JavaFXPlatform.values().forEach {platform ->
